@@ -1,12 +1,61 @@
 require('dotenv').config();
+//First, require mongoose as mongoose in myApp.js
 const mongoose = require('mongoose');
+//Connect to the database using the following syntax:
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+//??^^??Still have no idea what we are connecting to????
+
+
+//mongodb+srv://Liebmann5:<password>@cluster0.eihacxg.mongodb.net/fcc-mongodb-and-mongoose?retryWrites=true&w=majority 
+//*https://forum.freecodecamp.org/t/mongodb-and-mongoose-install-and-set-up-mongoose/576914
+//*https://forum.freecodecamp.org/t/mongodb-and-mongoose-install-and-set-up-mongoose/575265
+//*https://forum.freecodecamp.org/t/mongodb-and-mongoose-install-and-set-up-mongoose/591435
+
+/*
+https://www.geeksforgeeks.org/how-to-install-mongodb-for-vscode/
+https://forum.freecodecamp.org/t/still-trying-to-connect-a-string-to-the-database/586874
+https://forum.freecodecamp.org/t/install-setup-mongoose/485911
+https://forum.freecodecamp.org/t/mongodb-cluster-connection-instructions-very-confusing/417145/9
+https://forum.freecodecamp.org/t/install-setup-mongoose/485911/5
+https://forum.freecodecamp.org/t/freecodecamp-challenge-guide-install-and-set-up-mongoose/301540
+https://forum.freecodecamp.org/t/mongoose-mongodb-connection-issue/440303/2
+https://www.freecodecamp.org/news/learn-mongodb-a4ce205e7739/
+*/
+
+
+//FCC: In real servers, the interactions with the database happen in handler functions.
+  //???These functions are executed when some event happens (e.g. someone hits an endpoint on your API).???
+    //Q:An event is different than a handler f(n)?? Event = clicking?? Handler f(n) = API endpoint{or end of PATH}??
+
+
+//*https://github.com/freeCodeCamp/boilerplate-mongomongoose/commit/787c0973b3228966a9d8a886157b62250e685bb9*
+//https://docs.npmjs.com/cli/v8/commands/npm-install
+    //  =>  "npm init -y"   https://stackoverflow.com/questions/62725481/what-is-the-meaning-of-npm-init-y
+    // pretty sure 'init' == initialize
+
+
+
+//THERE SILLY WAY
+//https://www.geeksforgeeks.org/how-to-install-mongodb-on-windows/
 
 
 let Person;
 
-Person = require('./src/models/person');
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//Person = mongoose.model("Person", personSchema);
+Person = require('./src/models/person');      //How the heck does any of this work???
+//they should've labeled it PersonModel
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+//*https://stackoverflow.com/questions/57230731/how-to-fix-create-is-not-a-function-error-in-mongoose*
+
+/*let personInfo = new Person({
+  name: 'IHateYou',
+  age: 280000,
+  favoriteFoods: ['silk milk', 'keys']
+});*/
 
 
 const createAndSavePerson = (done) => {
@@ -15,10 +64,14 @@ const createAndSavePerson = (done) => {
     age: 280000,
     favoriteFoods: ['silk milk', 'keys']
   });
-
+  
+  //done(null /*, data*/);                         v NOTICE... it's the done method!!!
   personInfo.save((err, data) => err ? done(err) : done(null, data));
 };
 
+//https://www.geeksforgeeks.org/mongoose-document-model-create-api/
+//https://forum.freecodecamp.org/t/freecodecamp-challenge-guide-create-many-records-with-model-create/301537
+//https://forum.freecodecamp.org/t/mongodb-and-mongoose-create-many-records-with-model-create/586873
 var arrayOfPeople = [
   {name: 'Dennis', age: 30, favoriteFoods: ['guns', 'hammers', 'steaks']},
   {name: 'The', age: 2, favoriteFoods: ['the']},
@@ -26,53 +79,72 @@ var arrayOfPeople = [
 ];
 const createManyPeople = (arrayOfPeople, done) => {
   Person.create(arrayOfPeople, (err, data) => err ? done(err) : done(null, data))
+        //.save((err, data) => err ? done(err) : done(null, data));
+        //???? How is the callback f(n) a save method??? Especially because we never even call/use save()?????
 };
 
 const findPeopleByName = (personName, done) => {
+  //NOTE: The code is also written like this sometimes but is just  =>  Person.find().save();
   Person
     .find({
       name: personName
     }, (err, data) => err ? done(err) : done(null, data));
+    //.save((err, data) => err ? done(err) : done(null, data));
 };
 
 const findOneByFood = (food, done) => {
   Person.findOne( {favoriteFoods: food }, (err, data) => err ? done(err) : done(null, data) );
+  //done(null /*, data*/);
 };
 
 const findPersonById = (personId, done) => {
+  // Person.findById( { _id: personId }, (err, data) => err ? done(err) : done(null, data));
   Person.findById(personId, (err, data) => err ? done(err) : done(null, data));
+  //done(null /*, data*/);
 };
 
 const findEditThenSave = (personId, done) => {
   const foodToAdd = "hamburger";
 
-  //Mongoose declared the update() as 'DEPRECATED'!!!)
+  //Mongoose declared the update() as 'DEPRECATED'!!!
+  //Person.update( { _id: personId }, {} )
   Person.findById(personId, (err, data) => {
-    data.favoriteFoods.push(foodToAdd);
+    //Person.findOne( { favoriteFoods: Array.push(foodToAdd) }, (err, data) => err ? done(err) : done(null, data));
+    data.favoriteFoods.push(foodToAdd);   // Array.push() situation!!!
+    //?? What is the 'data' argument??? They used the variableName 'person'?!?!?! 
     data.save((err, updatedPerson) => err ? done(err) : done(null, updatedPerson));
   });
+  //done(null /*, data*/);
 };
 
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
 
+  /*Person.findOneAndUpdate( { name: personName }, { age: ageToSet }, { new: true, runValidators: true } )
+        .then(doc => { console.log(doc) })
+        .catch(err => { console.error(err) });*/
   Person.findOneAndUpdate( { name: personName }, { age: ageToSet }, { new: true}, (err, updatedDoc) => {
     err ? done(err) : done(null, updatedDoc);
   } );
 };
 
 const removeById = (personId, done) => {
-  Person.findByIdAndRemove(personId, (err, removedDoc) => err ? done(err) : done(null, removedDoc));
+  Person.findByIdAndRemove( { _id: personId }, (err, removedDoc) => err ? done(err) : done(null, removedDoc));
   //ALSO OK!!!!!
-  //Person.findByIdAndRemove( { _id: personId }, (err, removedDoc) => err ? done(err) : done(null, removedDoc));
+  //Person.findByIdAndRemove(personId, (err, removedDoc) => err ? done(err) : done(null, removedDoc));
 };
 
 const removeManyPeople = (done) => {
   const nameToRemove = "Mary";
 
+  /*Person.find( { name: nameToRemove }, (err, data) => {
+    data.name.remove()
+  });*/
   Person.deleteMany( { name: nameToRemove }, (err, data) => err ? done(err) : done(null, data));
 };
 
+//https://forum.freecodecamp.org/t/need-advise-last-lesson-of-mongodb-mongoose/503795/15
+//*https://forum.freecodecamp.org/t/stuck-on-the-last-challenge-of-the-back-end-development-and-apis/585479/2*
 const queryChain = (done) => {
   const foodToSearch = "burrito";
 
